@@ -7,6 +7,7 @@ void init();
 bool insertUser(char *username, char *password);
 bool userExist(char *username);
 bool deleteUser(char *username);
+char *getPassword(char *username);
 
 int getNumberOfUsers();
 
