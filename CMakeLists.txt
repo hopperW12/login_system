@@ -6,4 +6,4 @@ set(CMAKE_C_STANDARD 99)
 include_directories("lib")
 
 
-add_executable(LS_System main.c usersmanager.c usersmanager.h database.c database.h lib/sqlite3.c)
+add_executable(LS_System main.c database.c database.h lib/sqlite3.c scipher.c scipher.h)
