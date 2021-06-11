@@ -6,9 +6,8 @@
 void init();
 bool insertUser(char *username, char *password);
 bool userExist(char *username);
-bool deleteUser(char *username);
 char *getPassword(char *username);
 
-int getNumberOfUsers();
+void printAllUsers();
 
 #endif //LS_SYSTEM_DATABASE_H

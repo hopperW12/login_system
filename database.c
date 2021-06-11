@@ -9,6 +9,7 @@
 char *databaseName = "database.db";
 
 void init() {
+
     sqlite3 *db;
     int rc = sqlite3_open(databaseName, &db);
     if (rc != SQLITE_OK) {
@@ -16,7 +17,6 @@ void init() {
         return;
     }
 
-    //Vytváření tabulky users
     char *sql = "CREATE TABLE IF NOT EXISTS users(username VARCHAR(25) PRIMARY KEY, password VARCHAR(256));";
     char *err_msg;
 
@@ -32,22 +32,27 @@ void init() {
 }
 
 bool insertUser(char *username, char *password) {
+
     sqlite3 *db;
     int rc = sqlite3_open(databaseName, &db);
+
     if (rc != SQLITE_OK) {
         sqlite3_close(db);
         return false;
     }
+
     char *sql = "REPLACE INTO users(username, password) VALUES(?, ?);";
     sqlite3_stmt *stmt;
-
     rc = sqlite3_prepare(db, sql, -1, &stmt, 0);
+
     if (rc != SQLITE_OK) {
         printf("SQL Error: %s\n", sqlite3_errmsg(db));
         return false;
     }
+
     sqlite3_bind_blob(stmt, 1, username, (int) strlen(username), SQLITE_STATIC);
     sqlite3_bind_blob(stmt, 2, password, (int) strlen(password), SQLITE_STATIC);
+
     rc = sqlite3_step(stmt);
 
     if (rc != SQLITE_DONE) {
@@ -62,6 +67,7 @@ bool insertUser(char *username, char *password) {
 }
 
 char *getPassword(char *username) {
+
     sqlite3 *db;
     sqlite3_stmt *stmt;
 
@@ -86,22 +92,61 @@ char *getPassword(char *username) {
 
     while (1) {
         int step = sqlite3_step(stmt);
+
         if (step == SQLITE_ROW) {
+
             const char *password = (const char *) sqlite3_column_text(stmt, 1);
             char *pw = calloc(strlen(password), sizeof(char));
             strncpy(pw, password, strlen(password));
+
             sqlite3_finalize(stmt);
             sqlite3_close(db);
+
             return pw;
         } else if (step == SQLITE_DONE) {
             return "";
         } else {
             printf("SQL execution failed: %s", sqlite3_errmsg(db));
+
             sqlite3_finalize(stmt);
             sqlite3_close(db);
+
             return "";
         }
     }
+}
+
+void printAllUsers() {
+
+    sqlite3 *db;
+    int rc = sqlite3_open(databaseName, &db);
+    if (rc != SQLITE_OK) {
+        sqlite3_close(db);
+        return;
+    }
+
+    sqlite3_stmt * stmt;
+    char *sql = "SELECT * FROM users";
+    sqlite3_prepare(db, sql, -1 , &stmt, 0);
+
+    for (int i = 1; ; i++) {
+
+        int s = sqlite3_step(stmt);
+
+        if (s == SQLITE_ROW) {
+            const char *user = (const char *) sqlite3_column_text(stmt, 0);
+
+            printf("%d. username: %s\n", i, user);
+        } else if (s == SQLITE_DONE) {
+            break;
+        } else {
+            printf("SQL Error: %s\n", sqlite3_errmsg(db));
+            return;
+        }
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
 }
 
 bool userExist(char *username){
@@ -120,8 +165,11 @@ bool userExist(char *username){
 
     sqlite3_prepare(db, sql, -1 , &stmt, 0);
     for (int i = 0; ; i++) {
+
         int s = sqlite3_step(stmt);
+
         if (s == SQLITE_ROW) {
+
             const char *user = (const char *) sqlite3_column_text(stmt, 0);
             strncpy(tempUsernames[i], user, strlen(user));
         } else if (s == SQLITE_DONE) {
