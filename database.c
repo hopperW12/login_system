@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "main.h"
 
@@ -86,11 +87,9 @@ char *getPassword(char *username) {
     while (1) {
         int step = sqlite3_step(stmt);
         if (step == SQLITE_ROW) {
-            printf("Return %s\n", sqlite3_column_text(stmt, 1));
             const char *password = (const char *) sqlite3_column_text(stmt, 1);
-            char *pw = "";
+            char *pw = calloc(strlen(password), sizeof(char));
             strncpy(pw, password, strlen(password));
-            printf("Return");
             sqlite3_finalize(stmt);
             sqlite3_close(db);
             return pw;
@@ -123,7 +122,7 @@ bool userExist(char *username){
     for (int i = 0; ; i++) {
         int s = sqlite3_step(stmt);
         if (s == SQLITE_ROW) {
-            const char *user = sqlite3_column_text(stmt, 0);
+            const char *user = (const char *) sqlite3_column_text(stmt, 0);
             strncpy(tempUsernames[i], user, strlen(user));
         } else if (s == SQLITE_DONE) {
             break;

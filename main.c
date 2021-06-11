@@ -20,14 +20,13 @@ int status;
 
 int main() {
     init();
-    insertUser("admin", convertToCipher("admin"));
+
+    char *rootPassword = convertToCipher("admin");
+    insertUser("admin", rootPassword);
+    free(rootPassword);
     status = 0;
 
-    userExist("admin");
-
-    printf("%s", getPassword("admin"));
-
-    /*while (1) {
+    while (1) {
         if (status == 0) {
             info();
             int typ;
@@ -57,7 +56,6 @@ int main() {
             if (strcmp(username, "exit") == 0) {
                 status = 0;
                 clearConsole();
-                info();
                 continue;
             } else if (strlen(username) > usernameLen) {
                 printf("Tento uzivatel neexisuje.\n\n");
@@ -70,24 +68,40 @@ int main() {
                 char password[passwordLen];
                 printf("Zadej heslo: ");
                 scanf("%s", password);
+                char *convertPassword = convertToCipher(password);
                 char *userPassword = getPassword(username);
-                printf("fsffdsf");
-                if (strcmp(password, userPassword) == 0) {
+                if (strcmp(convertPassword, userPassword) == 0) {
                     status = 4;
                     clearConsole();
                     info();
 
                     printf("\nInformace o uctu: \n\n");
-                    printf("Jmeno: %s", username);
-                    printf("Posledni prihlaseni: \n\n");
+                    printf("Jmeno: %s\n\n", username);
+                    printf("Pro odhlaseni napis: logout\n");
+                    free(userPassword);
+                    free(convertPassword);
+                    status = 4;
                     continue;
                 } else {
                     printf("Spatne udaje!.\n\n");
+                    free(userPassword);
+                    free(convertPassword);
                     continue;
                 }
             }
+        } else if (status == 4) {
+            char command[255];
+            printf("Prikaz: ");
+            scanf("%s", command);
+            if (strcmp(command, "logout") == 0) {
+                clearConsole();
+                status = 0;
+            } else {
+                printf("Tento prikaz neexistuje.\n");
+                continue;
+            }
         }
-    }*/
+    }
 }
 
 
@@ -108,6 +122,8 @@ void info() {
             break;
         case 4:
             printf("Uspesne prihlaseni.\n");
+            break;
+        default:
             break;
     }
 }
