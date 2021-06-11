@@ -159,7 +159,7 @@ int main() {
             clearConsole();
             info();
 
-            printf("\nUzivatel byl upspesne vytvoren. \n");
+            printf("\nUzivatel byl uspesne vytvoren. \n");
 
             free(convertPassword);
         /*
