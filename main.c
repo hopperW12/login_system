@@ -148,7 +148,7 @@ int main() {
             scanf("%s", confirm);
 
             if (strcmp(password, confirm) != 0) {
-                printf("Hesla se neshoduji.\n");
+                printf("Hesla nejsou stejná!\n");
                 continue;
             }
 
